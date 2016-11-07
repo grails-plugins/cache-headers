@@ -170,7 +170,7 @@ class CacheHeadersService {
 				if (log.debugEnabled) {
 					log.debug "There was a list of ETag candidates supplied [${tagList}], calculated new ETag... ${etag}"
 				}
-				if (!tagList.contains(etag)) {
+				if (!tagList.contains(etag?.toString())) {
 					etagChanged = true
 				}
 			}
