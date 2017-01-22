@@ -1,13 +1,11 @@
 package grails.plugins.cacheheaders
 
-import org.springframework.beans.factory.annotation.*
 import grails.web.api.*
 import groovy.transform.*
 
 @CompileStatic
 trait CacheHeadersTrait extends ServletAttributes {
 
-	@Autowired
 	CacheHeadersService cacheHeadersService
 
 
