@@ -23,7 +23,7 @@ trait CacheHeadersTrait extends ServletAttributes {
 		 cacheHeadersService.cache(response, args) 
 	}
 	void withCacheHeaders( Closure c) { 
-		cacheHeadersService.withCacheHeaders(response, c) 
+		cacheHeadersService.withCacheHeaders([ response: response, request: request ], c)
 	}
 
 	void lastModified( dateOrLong ){ 
