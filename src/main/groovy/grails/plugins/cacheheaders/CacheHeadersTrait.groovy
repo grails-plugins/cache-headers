@@ -7,9 +7,7 @@ import groovy.transform.*
 @CompileStatic
 trait CacheHeadersTrait extends ServletAttributes {
 
-	@Autowired
 	CacheHeadersService cacheHeadersService
-
 
 	void cache( boolean allow ) {
 		 cacheHeadersService.cache(response, allow) 
@@ -22,8 +20,9 @@ trait CacheHeadersTrait extends ServletAttributes {
 	void cache( Map args ) {
 		 cacheHeadersService.cache(response, args) 
 	}
-	void withCacheHeaders( Closure c) { 
-		cacheHeadersService.withCacheHeaders(response, c) 
+
+	boolean withCacheHeaders( Closure c) {
+		cacheHeadersService.withCacheHeaders([ response: response, request: request ], c)
 	}
 
 	void lastModified( dateOrLong ){ 

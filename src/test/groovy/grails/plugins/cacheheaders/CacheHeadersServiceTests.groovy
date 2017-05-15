@@ -1,19 +1,17 @@
 package grails.plugins.cacheheaders
 
+import junit.framework.TestCase
 
 import java.text.SimpleDateFormat
 
 import org.springframework.mock.web.MockHttpServletRequest
 import org.springframework.mock.web.MockHttpServletResponse
 
-
 import grails.test.mixin.*
-import org.junit.*
-import test.*
 import static org.junit.Assert.*
 
 @TestFor(CacheHeadersService)
-class CacheHeadersServiceTests  {
+class CacheHeadersServiceTests extends TestCase  {
 
 	private MockHttpServletRequest req = new MockHttpServletRequest()
 	private MockHttpServletResponse resp = new MockHttpServletResponse()
