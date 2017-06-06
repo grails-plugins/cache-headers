@@ -1,0 +1,326 @@
+= Grails Cache Headers Plugin Documentation
+v2.0.1, 2017-06-06
+:toc: left
+
+== Summary
+Improve your application performance with browser caching, with easy ways to set caching headers
+in controller responses
+
+== Installation
+Install the plugin by adding a dependency in `build.gradle`
+
+[source, groovy]
+----
+compile 'or.grails.plugins:cache-headers:2.0.1'
+----
+
+== Description
+This plugin helps you improve your application performance with browser caching, with easy ways to set
+caching headers in controller responses, and elegant ways to deal with ETag and Last-Modified
+generation and checking.
+
+You can use this plugin to prevent caching of pages (e.g. forms), specify long-term caching on
+infrequently changing content, and pass information to caching servers
+between the client and your app, and also to avoid regeneration of content if it has not
+changed since the client last downloaded it (even though the client may have an indication it has expired).
+
+The methods provide a semantic approach to caching based on what you want to actually achieve, and
+does the "right thing" with caching headers to achieve it. This is awkward to achieve just by
+setting headers yourself, in terms of compatibility with older or totally lame browsers (no names needed...)
+behaving differently and requiring different headers to operate as expected. Doing it directly with
+headers leads to all kinds of fun with Expires/max age/cache control/last modified headers.
+
+All these methods are available in controller actions. If you need to call them from another context,
+see the source of the `CacheHeadersService` where these methods reside.
+
+
+=== Usage
+
+=== Cache - Boolean
+
+There are several controller dynamic methods added by the plugin, which you use to indicate how the
+current response should be cached.
+
+[source, groovy]
+----
+cache(boolean canCache)
+----
+
+Using this method you can instantly prevent the current response being cached ever:
+
+[source, groovy]
+----
+class MyController {
+   def oneTimeInfo() {
+       cache false
+       render "This is never cached"
+   }
+}
+----
+
+This will set any response headers required to completely prevent caching. This is good for things
+like pages where the data used to generate them is no longer available or for stuff that must always
+use the latest live data.
+
+Perhaps irritatingly to some, setting `cache true` is not permitted and will throw an exception.
+Just don't call it. You can't force caching, so `cache true` makes no sense. Strangely, `cache false` does
+make perfect sense. Language is a strange thing!
+
+
+=== Cache - Map Arguments
+[source, groovy]
+----
+cache(Map arguments)
+----
+
+This form of the method gives access to precise control over the caching of the response, such as how
+long it is to be considered valid for, whether or not it can be cached by intermediary caching
+servers and reused for other users (i.e. has no private info in it) etc.
+
+The arguments supported are:
+
+[options="header"]
+|===
+| key | defaultValue | compatibility | description
+| `store` | true | | set this to false to prevent caching servers between the client and your app from keeping a copy of the content.
+| `shared`| false || set this to true to permit caching servers to serve this same content to other users.
+| `validFor`| | Not compatible with validUntil. Use one or the other. | set this specify how long the current response is valid for, in seconds. Sets all the headers required to achieve this cross-browser.
+| `validUntil`| |  Not compatible with validFor. Use one or the other. | set this to a Date instance if you have a specific end-date in mind for your content.
+| `neverExpires`| | Not compatible with validFor or validUntil. | set to true to force the client to never request a new copy of this content, unless the user forces it with a refresh in their client or the client cache is flushed.
+|===
+
+Here's an example of usage:
+
+[source, groovy]
+----
+class ContentController {
+   def show() {
+       cache shared:true, validFor: 3600  // 1hr on content
+       render(....)
+   }
+   def todaysNewItems() {
+       cache shared: true, validUntil: new Date()+1
+       render(....)
+   }
+
+   def searchResults() {
+       cache validFor: 60 // don't re-run same search for 60s!
+       render(....)
+   }
+
+   def personalInfo() {
+       cache store: false // don't let intermediate caches store this! (https:// would imply this)
+       render(....)
+   }
+----
+
+=== Cache - PresetName
+
+[source, groovy]
+----
+cache(String presetName)
+----
+
+This variant of the cache method allows you to define presets for your cache settings in `application.yml`
+and recall them by name.
+
+This is much more convenient as you can clearly define and centralize your caching strategy,
+so that controllers only need to indicate what they are trying to achieve semantically:
+
+[source, yml]
+.application.yml
+----
+cache:
+    headers:
+        presets:
+            authed_page: false
+            content:
+                shared: true
+                validFor: 3600
+            search_results:
+                shared: true
+                validFor: 60
+----
+
+or in `application.groovy`
+
+[source, groovy]
+.application.groovy
+----
+cache.headers.presets = [
+    authed_page: false, // No caching for logged in user
+    content: [shared:true, validFor: 3600], // 1hr on content
+    news: [shared: true, validUntil:new Date()+1],
+    search_results: [validFor: 60, shared: true]
+]
+----
+
+[source, groovy]
+.ContentController.groovy
+----
+class ContentController {
+   def show() {
+       cache "content"
+       render(....)
+   }
+   def todaysNewItems() {
+       cache "news"
+       render(....)
+   }
+
+   def searchResults() {
+       cache "search_results"
+       render(....)
+   }
+
+   def personalInfo() {
+       cache "authed_page"
+       render(....)
+   }
+----
+
+This also makes it trivial to have per-environment caching settings so you can prevent / relax
+caching during development.
+
+=== Last-Modified
+
+[source,groovy]
+----
+lastModified(dateOrLong)
+----
+
+This method is a shortcut for setting the `Last-Modified` header of your response. Its important to
+get this as correct as you can for the content you are serving. It is used in several caching
+situations in browsers and proxies.
+
+If you are not using the `withCacheHeaders` method (see next section) you can use this method to
+set the Last-Modified header explicitly:
+
+[source,groovy]
+----
+class BookController {
+   def show() {
+       def book = Book.get(params.id)
+       lastModified book.dateUpdated
+
+       render(....)
+   }
+----
+
+A Date or Long can be passed to the method, and it will be encoded as per the HTTP date format.
+
+=== withCacheHeaders - Closure
+
+[source,groovy]
+----
+withCacheHeaders(Closure dsl)
+----
+
+This method acts similarly to the Grails `withFormat` method, but lets you provide code that
+will let the plugin automatically handle ETag-based `If-None-Match` and `Last-Modified`
+based `If-Modified-Since"` requests for you.
+
+This means that even if your content cannot be cached for long periods in the client,
+you can avoid the cost of re-processing and transmitting the same content if you can identify
+whether or not it has changed.
+
+In this case the client sends a GET request, and your app automatically replies with a `304 Not Modified`
+response if your code indicates that the content the client has can still be used.
+
+Here's an example:
+
+[source, groovy]
+----
+class BookController {
+  def show() {
+     withCacheHeaders {
+         def book = Book.get(params.id)
+         etag {
+            "${book.ident()}:${book.version}"
+         }
+         lastModified {
+            book.dateCreated ?: book.dateUpdated
+         }
+         generate {
+            render(view:"bookDisplay", model:[item:book])
+         }
+     }
+  }
+}
+----
+
+There are three DSL methods you can implement.
+
+The optional "etag" closure is executed if the code needs to generate an `ETag` for the current request.
+Even if the request does not include an `If-None-Match` header, this closure will be called if
+the content is generated, to set the header for clients that have not received it before.
+
+The optional `lastModified` closure is executed to set the `Last-Modified` header, and
+to compare it with any `If-Modified-Since` header sent by clients.
+
+Since Grails 2.x, controllers actions are class methods instead of public closures, and that leads to a
+name clash between `lastModified` the method, and `lastModified` the internal DSL of the `withCacheHeaders`
+closure. A simple workaround is to use this syntax:
+
+[source, groovy]
+----
+class BookController {
+  def show () {
+     withCacheHeaders {
+         def book = Book.get(params.id)
+         delegate.lastModified {
+            book.dateCreated ?: book.dateUpdated
+         }
+         generate {
+            render(view:"bookDisplay", model:[item:book])
+         }
+     }
+  }
+}
+----
+If either the `ETag` or `Last-Modified` values fail requirements set by the request headers,
+the "generate" closure will be called to render the response. When this happens,
+the plugin will automatically set `Last-Modified` and `ETag` using the values your closures provided.
+
+== Configuration
+
+You use `application.yml` to control whether the caching plugin is used at all
+from config, so for example you can completely prevent all caching header operations
+during tests or development:
+
+[source, yaml]
+.grails-app/conf/application.yml
+----
+# Prevent any client side caching for now
+cache:
+    headers:
+        enabled: false
+----
+
+You can also set up preset cache settings by name:
+
+[source, yaml]
+.grails-app/conf/application.yml
+----
+cache:
+    headers:
+        presets:
+            unauthed_page:
+                shared: true
+                validFor: 300 # 5 minute refresh window
+            authed_page: false # No caching for logged in user
+            content:
+                shared: true
+                validFor: 3600 # 1hr on content
+            recent_items_feed:
+                shared: true
+                validFor: 1800 # 30 minute throttle on RSS updates
+            search_results:
+                validFor: 60
+                shared: true
+            taxonomy_results:
+                validFor: 60
+                shared: true
+----
+
+To use presets, see the above description for the `cache(String presetName)` method variant.

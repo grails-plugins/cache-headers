@@ -1,6 +1,6 @@
 package com.grailsrocks.cacheheaders
 
-import grails.plugins.cacheheaders.*
+import grails.plugins.cacheheaders.CacheHeadersTrait
 
 class TestController implements CacheHeadersTrait {
 
