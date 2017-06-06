@@ -3,18 +3,17 @@ jdk:
 - oraclejdk7
 before_script:
 - rm -rf target
-script: ./travis-build.sh
-env:
-  global:
-  - GIT_NAME="Graeme Rocher"
-  - GIT_EMAIL="graeme.rocher@gmail.com"
-  - secure: kBeaNzEuThDWeynwh4kVvdjRu9KffayX6BEsBJCH1VTnLG2/8MBylM22fUD81cz/wDATgbHBony1tD//guiJkNNZo98SEVP5ucvlwiBucE1+wMYlcE7b099KPvdKj78HhRwCfSeurJO6BKxgD4LEyr4dU7mYPHqBupZHsCSekJo=
-  - secure: XxmQ9KnGspnAHiac6UVvlxL5RbM1b1Cw6PCyjrYv1vlp1wOt1UVWbR4ABoQrs2TDl+BLs4/RTecEDQI02h02LtHjKwDrap+lJNs3bjwEW6rd/V9GJ1BHckwfHmbpn6gnwGoOm74rmPG9HdG+A+ytDmZQr/YdCuSrcQAfkZZKCFw=
-  - secure: m6fC8U26sJnaryx4lyfapwRsviSDqRinppuVa82Fmxd4X2NC1SFdb3Y2d0O1BteArdx4YFhLv3t5PC6T3K+DqD/Ab9Iy4FJnJS9y2YJx4YhT3i8Bi/pRqWmtsvwtzG7g9iHuCsLNrgXAxaiKMBUyS0uWB2ZJDYKQydVv6f2ePMk=
-  - secure: OUdTVWoEGz4F41asmOO8KQC8ZiSHZkUPdTxnP9Sud3Ylk/UycGITOXhReCnXqpkmh3l4tZT6G2asLrhBg2mrY6YMXZEpvFCGxC96YZU6SjNwMmvcTD+6odialS9GlwvWS+QFt/dcjmFo3X6C6ro6+tmZg1l4Rg8u+Egw0GihOjQ=
-  - secure: kG0kLymJ1zMqBoFwVb/sx7/mpnJMPmU5ODtfsC4MLhfdE/Fh3ToVWdRz05c+bI94pOCkFPbU/G4D8WzgZUHj1+Xn7ibciY98oXXlmpE2cQpPoehTjH1dxLeMal18QbI61qezlpeY0SP0JNH5iqGmjKP9QuwFF4MCNY+vXN3Xpfs=
-  - secure: Bi/VD2joJerJc0KLmGfcXlYykQLC+sJ7HkVBbY7AS+JmTCf/jEbQgK5CHw0GyJ5rQbvEhUzQJqD5eGeUkEWlGVhsRFUaNOa/lgf4zPVQdtYtdg/QTekiUvNGtLTI1k1V88vl3KjzwmWfulWgp/tWyzlaTdVbBrwICheJlKiQq1M=
+script: "./travis-build.sh"
 sudo: false
 cache:
   directories:
-    - $HOME/.gradle
+  - "$HOME/.gradle"
+env:
+  global:
+  - secure: Cxb4QWod8aN7HOd260BWL8l7b+a3gIx29ZDBDyP2BGmQQisBg2rpg74zGn7wjgPy5RzOKPVOnTak6Mox5lpO0d4badifUEMXzazAY/XxjRXAQelNc7NrhbUHLkVRvxBdpnY62cfd8b0kAukgBiTSAxcVfyq2xzmlcbvAOPT35bs=
+  - secure: VvSJA/bL/LowHfbrhndWkZGzOgNsA9D4kEA9+z/MK6OCSAe/C47SNpnCS4syA32vR+y5F41k9Pef72T/ALo/eWxELG6KUs6aIgkkrmnrnoYQMN2qjNwHeqRXKxCfdG7Doncc6eYzjm2Jc3aQYeHz9wY3OWegydMqHjk3Bl4BI44=
+  - secure: IHB6bdv/rCyCF0pzTwh0ot/11m4Sz1D5dXsiR4vomQ2G56bbdtieLlwgBwHoRM7FjAtTbdqsPxx5N5tYjb3YKoiidaONgwwh5Q3d2r/IGByoxpb6hUHLZmxPZvvbCQlrOq8fB3nncojfj96usf4q24FczQRxqTRzOgxv0qKRl/I=
+  - secure: FsxdziaIdFCCV0a1emEEV8suBh4xnmwdWIMgXcYfh70XZxJ73Cn//TmCH0JqZHYDEVvudCGwwWx/7//Dhf+UkCeqlYpCZGmdRxbJtdLTeHW/zDomnScHBjfsI4z5OSlvxsuauPc0qjAxLVh+Lx4F4o+8evDBu0MCG0KEMHFjKlQ=
+  - secure: U+kOH9/2p+SH6iQp6Y0BrC+diY+c9rOe6k6m1T6PjPUJfSBq8QIMHb4cQQybFViyp46i1p6VBxmdOvckzFdIpGTezCSMGTKdX2x6qaeb5LFewMHUodghhcT3sjnbYf+urIJyHgIR2TCuzzclCnUZhEEZ+S57T0FwHU60ED61IN4=
+  - secure: R8wb3+aZHWKJfwm8Miqs9ZIPhnTJ+P4VE8R2hu0++4r4SGXfNUDbvIywYWvdtmbj6FkGQbZrJG9AcjTm2QHLV8zcj9sHbu67a9VWGGoQsqIBB8NxiwPTE1uFInoWg7K4p7aydDLg71zyTy6HMIW/RGJY2VLllL0OuNJZBnolR78=
+  - secure: g1mC/xvo2YmB4vu1gl7Br78GmEHDlJgJEYEbyCo0mXgyYlL6Or6H+osz1/W8ruNQdDi3w4lcB+vAZbzumSPIkQDWviW05c/P9Jd5kv6iTN+rBbKApd05NWbcXlAFae3it52kMPYHKT4IrvFoLQhVjSd0u/VieUECsveA5OICix8=
