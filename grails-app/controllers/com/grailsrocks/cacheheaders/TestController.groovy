@@ -36,4 +36,15 @@ class TestController implements CacheHeadersTrait {
 	def combinedStoreAndShareDefaultTest() {
 		cache store: false
 	}
+
+	def withCacheHeadersHasRequestAndResponseTest() {
+ 		withCacheHeaders {
+ 			etag {
+ 				"686897696a7c876b7e"
+ 			}
+ 			generate {
+ 				[:]
+			}
+ 		}
+ 	}
 }
