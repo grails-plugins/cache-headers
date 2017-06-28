@@ -97,6 +97,15 @@ class CacheMethodsSpec extends Specification {
         ccParts.contains('no-store')
     }
 
+    def "testWithCacheHeadersHasRequestAndResponse" () {
+      	when:
+      	testController.withCacheHeadersHasRequestAndResponseTest()
+
+      	then:
+      	testController.response != null
+      	testController.request != null
+    }
+
     private static String dateToHTTPDate(date) {
         def v = new SimpleDateFormat(RFC1123_DATE_FORMAT, Locale.ENGLISH)
         v.timeZone = TimeZone.getTimeZone('GMT')
