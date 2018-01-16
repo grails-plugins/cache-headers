@@ -11,7 +11,7 @@ Install the plugin by adding a dependency in `build.gradle`
 
 [source, groovy]
 ----
-compile 'or.grails.plugins:cache-headers:2.0.1'
+compile 'org.grails.plugins:cache-headers:2.0.1'
 ----
 
 == Description
