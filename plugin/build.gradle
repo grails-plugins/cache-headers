@@ -1,0 +1,36 @@
+plugins {
+    id 'eclipse'
+    id 'idea'
+    id 'java-library'
+    id 'maven-publish'
+    id 'org.asciidoctor.jvm.convert' version "$asciidoctorJvmVersion"
+}
+
+version project.version
+
+apply plugin:"org.apache.grails.gradle.grails-plugin"
+apply plugin: 'org.apache.grails.gradle.grails-exploded'
+apply from: "${rootProject.projectDir}/gradle/docs.gradle"
+
+compileJava.options.release = 17
+
+dependencies {
+    implementation platform("org.apache.grails:grails-bom:$grailsVersion")
+    compileOnly "org.apache.grails:grails-dependencies-starter-web"
+
+    implementation("org.apache.groovy:groovy-dateutil:4.0.29")
+
+    testImplementation "org.apache.grails:grails-testing-support-web"
+}
+
+grails {
+    springDependencyManagement = false
+}
+
+bootJar.enabled = false
+
+tasks.register('docs') {
+    dependsOn 'asciidoctor'
+}
+
+apply from: "${rootProject.projectDir}/gradle/testVerbose.gradle"

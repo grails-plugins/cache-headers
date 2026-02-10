@@ -1,1 +1,33 @@
-rootProject.name='cache-headers'
+plugins {
+    id "com.gradle.develocity" version "$develocityVersion"
+    id "com.gradle.common-custom-user-data-gradle-plugin" version "$customUserDataVersion"
+}
+
+def isCI = System.getenv().containsKey('CI')
+def isLocal = !isCI
+
+develocity {
+    server = 'https://ge.grails.org'
+    buildScan {
+        tag('grails')
+        tag('grails-forge')
+        publishing.onlyIf { it.authenticated }
+        uploadInBackground = isLocal
+    }
+}
+
+buildCache {
+    local { enabled = isLocal }
+    remote(develocity.buildCache) {
+        push = isCI
+        enabled = true
+    }
+}
+
+rootProject.name='grails-cache-headers'
+
+include 'plugin'
+include 'examples:plugin-test-app'
+include 'examples:functional-test-app'
+
+findProject(":plugin").name = "cache-headers"

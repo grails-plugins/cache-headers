@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+
+    <conversionRule conversionWord="clr"
+                    class="org.springframework.boot.logging.logback.ColorConverter"/>
+
+    <conversionRule conversionWord="wex"
+                    class="org.springframework.boot.logging.logback.WhitespaceThrowableProxyConverter"/>
+
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <charset>UTF-8</charset>
+            <pattern>
+                %clr(%d{yyyy-MM-dd HH:mm:ss.SSS}){faint} %clr(%5p) %clr(---){faint} [%15.15t] %clr(%-40.40logger{39}){cyan} : %m%n%wex
+            </pattern>
+        </encoder>
+    </appender>
+
+    <springProfile name="development">
+        <appender name="FULL_STACKTRACE" class="ch.qos.logback.core.FileAppender">
+            <file>${LOG_DIR:-build}/stacktrace.log</file>
+            <append>true</append>
+            <encoder>
+                <pattern>%level %logger - %msg%n</pattern>
+            </encoder>
+        </appender>
+
+        <logger name="StackTrace" level="ERROR" additivity="false">
+            <appender-ref ref="FULL_STACKTRACE"/>
+        </logger>
+    </springProfile>
+
+    <root level="ERROR">
+        <appender-ref ref="STDOUT"/>
+    </root>
+
+</configuration>

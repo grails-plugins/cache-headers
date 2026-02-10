@@ -1,0 +1,46 @@
+plugins {
+    id 'eclipse'
+    id 'idea'
+}
+
+apply plugin:"org.apache.grails.gradle.grails-web"
+
+grails {
+    plugins {
+        implementation project(':cache-headers')
+    }
+}
+
+dependencies {
+    implementation platform("org.apache.grails:grails-bom:$grailsVersion")
+
+    implementation "org.apache.grails:grails-dependencies-starter-web"
+
+    implementation "org.apache.grails:grails-web-boot"
+    implementation "org.springframework.boot:spring-boot-autoconfigure"
+    implementation "org.springframework.boot:spring-boot-starter"
+    implementation "org.springframework.boot:spring-boot-starter-actuator"
+    implementation "org.springframework.boot:spring-boot-starter-logging"
+    implementation "org.springframework.boot:spring-boot-starter-tomcat"
+
+    implementation("org.apache.groovy:groovy-dateutil:5.0.3")
+
+    implementation "io.methvin:directory-watcher:0.3.0"
+    implementation "net.java.dev.jna:jna:5.18.1"
+
+    testImplementation "org.apache.grails:grails-testing-support-web"
+    testImplementation "org.spockframework:spock-core"
+
+    console "org.apache.grails:grails-console"
+
+    profile "org.apache.grails.profiles:web-plugin"
+}
+
+bootRun {
+    jvmArgs('-Dspring.output.ansi.enabled=always')
+    sourceResources sourceSets.main
+}
+
+bootJar.enabled = true
+
+apply from: "${rootProject.projectDir}/gradle/integrationTestVerbose.gradle"
